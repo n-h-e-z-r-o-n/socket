@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/met.dir/Diffrent_Machine/server.c.o -o met 
