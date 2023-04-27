@@ -9,6 +9,20 @@
 
 #define MAX_JSON_SIZE 1000 // Maximum size of JSON data
 #define PORT 8080
+void concatenate_string(char* p, char* p2)
+{
+    while (*p != '\0'){
+        // printf("%c ", *p);
+        p++;
+    }
+    while (*p2 != '\0'){
+        // printf("%c", *p2);
+        *p=*p2;
+        p++;
+        p2++;
+    }
+}
+
 // Function to split a string by comma delimiter and store substrings in an array
 int splitStringByComma(char* str, char** substrings, int maxSubstrings) {
     int numSubstrings = 0;
@@ -26,7 +40,7 @@ void write_to_file(char New_json_Data[]){
 
     bool fileExists = false;
     // Check if file exists
-    FILE *fptr = fopen("user_data.json", "r");
+    FILE *fptr = fopen("/home/paul/Desktop/socket/Server_client/user_data.json", "r");
     if(fptr != NULL) {
         fileExists = true;
         fclose(fptr);
@@ -82,11 +96,12 @@ int dublicate_feed(char s[], char r[]){
 	int status = 0;
 
 
-	char ser_no[] = "\"serial Number \": \"";
+	char ser_no[100] = "\"serial Number \": \"";
+
 	strcat(ser_no, s); // Concatenate
 	serial_results = search_Duplicates(ser_no);
 
-	char reg_no[] = "\"Reg No \": \"";
+	char reg_no[100] = "\"Reg No \": \"";
 	strcat(reg_no, r); // Concatenate
 	reg_no_results = search_Duplicates(reg_no);
 
