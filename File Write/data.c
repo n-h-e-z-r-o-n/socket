@@ -97,7 +97,7 @@ int main() {
     char json[20000];
     int  feedback;
 
-    printf("\n ============================================================================================== \n");
+    printf("\n =============================================================================================================== \n");
     printf("\nFill In Your Details -------(avoid spaces) \n");
 
     printf("\n\t1. Enter Serail Number    :  "); // Prompt user for Serail Number
@@ -123,16 +123,24 @@ int main() {
 	    sprintf(json, "{ \"serial Number \": \"%s\", \"Reg No \": \"%s\", \"Name \": \"%s\"}", serai_Entry, Reg_No_Entry, Name_Entry);
 	    printf( "\n Data Captured successfully, Your ddetails has been stored in the file system");
 	    write_to_file(json);
-      printf("\n ============================================================================================== \n");
+      printf("\n =============================================================================================================== \n");
 
     }else if (feedback == 1){
-    		printf("\n Duplicated seial number \n");
+    		printf("\n ERROR: Duplicated seial number ~ seial nummber you provide is allready in the file system \n");
+        printf("\n =============================================================================================================== \n");
+
     }else if (feedback == 2){
- 		printf("\n Duplicated Registration number \n");
+ 		printf("\n ERROR: Duplicated Registration number ~ Registration nummber you provide is allready in the file system \n");
+    printf("\n =============================================================================================================== \n");
+
     }else if (feedback == 3){
- 		printf("\n The serial Number and Registration Number you provide are already in the system (Dublicate Error)\n");
+ 		printf("\n ERROR: The serial Number and Registration Number you provide are already in the system (Dublicate Error)\n");
+    printf("\n =============================================================================================================== \n");
+
     } else {
-            printf("\n Unknown Error !\n");
+            printf("\n ERROR: Unknown Error has occured !\n");
+            printf("\n =============================================================================================================== \n");
+
     }
     return 0;
 }
