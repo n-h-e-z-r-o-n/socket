@@ -106,7 +106,7 @@ int main() {
     printf("\n\t2. Enter Reg_Number       :  "); // Prompt user for Reg_Number
     scanf("%s", Reg_No_Entry);
 
-    printf("\n\t3. Enter first Name             :  "); // Prompt user for first  name
+    printf("\n\t3. Enter first Name       :  "); // Prompt user for first  name
     scanf("%s", Name_Entry);
 
 
