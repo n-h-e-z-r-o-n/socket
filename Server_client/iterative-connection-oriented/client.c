@@ -64,8 +64,8 @@ int main(){
     char  Reg_No_Entry[MAX_REG_NO_LEN];
     char Name_Entry[MAX_NAME_LEN];
     char json[MAX_JSON_LEN];
-    
-    
+
+
     bool fileExists = false;
 
 
@@ -87,8 +87,8 @@ int main(){
     serai_Entry[strcspn(serai_Entry, "\n")] = 0;
     Reg_No_Entry[strcspn(Reg_No_Entry, "\n")] = 0;
     Name_Entry[strcspn(Name_Entry, "\n")] = 0;
-    
- 
+
+
     // Format input as JSON string
     sprintf(json, "%s,%s,%s", serai_Entry, Reg_No_Entry, Name_Entry);
 
@@ -98,43 +98,3 @@ int main(){
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

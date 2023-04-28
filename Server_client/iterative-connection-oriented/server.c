@@ -1,4 +1,5 @@
 // @n_h_e_z_r_o_n_
+// (iterative connection-oriented server)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +8,7 @@
 #include <stdbool.h>
 #include <arpa/inet.h>
 
-#define MAX_JSON_SIZE 1000 // Maximum size of JSON data
+
 #define PORT 8080
 // Function to split a string by comma delimiter and store substrings in an array
 int splitStringByComma(char* str, char** substrings, int maxSubstrings) {
@@ -60,7 +61,7 @@ bool search_Duplicates(char search[]){
         return false;
     } else {
         // Read the entire JSON file into a character array
-        fread(json, sizeof(char), MAX_JSON_SIZE, jsonFile);
+        fread(json, sizeof(char), 20000, jsonFile);
         fclose(jsonFile);
 
         // Search for the key in the JSON data
@@ -82,11 +83,11 @@ int dublicate_feed(char s[], char r[]){
 	int status = 0;
 
 
-	char ser_no[] = "\"serial Number \": \"";
+	char ser_no[100] = "\"serial Number \": \"";
 	strcat(ser_no, s); // Concatenate
 	serial_results = search_Duplicates(ser_no);
 
-	char reg_no[] = "\"Reg No \": \"";
+	char reg_no[100] = "\"Reg No \": \"";
 	strcat(reg_no, r); // Concatenate
 	reg_no_results = search_Duplicates(reg_no);
 
@@ -116,45 +117,45 @@ int main() {
     char buffer[1024];
 
     // -----------------------------   Create a socket ------------------------------------------------------------------------------
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); //Create a socket
     if (sockfd < 0) {
         perror("Failed to create socket");
         exit(EXIT_FAILURE);
     }
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    server_addr.sin_family = AF_INET; // specifies that this is an IPv4 address
+    server_addr.sin_addr.s_addr = INADDR_ANY; //  specifies that the server will listen on all available network interfaces
+    server_addr.sin_port = htons(PORT); // specifies the port number that the server will listen on
 
     // --------------------------------- Bind the socket to the specified IP address and port ----------------------------------------
-    if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+    if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) { // Bind to well-known address
         perror("Failed to bind");
         exit(EXIT_FAILURE);
     }
 
     // ------------------------------- Listen for incoming connections ----------------------------------------------------------------
-    if (listen(sockfd, 5) < 0) {
+    if (listen(sockfd, 5) < 0) { // Place socket in passive mode using listen( ) with queue length of 5
         perror("Failed to listen");
         exit(EXIT_FAILURE);
     }
-
-    printf("Server is listening on port %d...\n", PORT);
+    printf("\n ============================================================================================================");
+    printf("\n SERVER IS LISTENING ON PORT: %d\n", PORT);
 
     while (1) {
         client_len = sizeof(client_addr);
        // A------------------------------- ccept a new connection --------------------------------------------------------------------
-        new_sockfd = accept(sockfd, (struct sockaddr *)&client_addr, &client_len);
+        new_sockfd = accept(sockfd, (struct sockaddr *)&client_addr, &client_len);// accept() is used to  allow the server to receive data from any client that has establishing a connection
         if (new_sockfd < 0) {
             perror("Failed to accept");
             exit(EXIT_FAILURE);
         }
-
+        printf("\n --------------------------------------------------------------------------------------------------------\n");
         printf("Connection accepted from %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
         // --------------------------------------------  Read data from client -------------------------------------------------------
         int n = read(new_sockfd, buffer, sizeof(buffer));
         if (n < 0) {
-            perror("Failed to read");
+            perror("Failed to read datd from client");
             exit(EXIT_FAILURE);
         }
 
@@ -168,52 +169,52 @@ int main() {
         printf("\n\t3. Client Name          : %s",substrings[2]);
         printf("\n     ");
 
-        printf("feedback ");
+
 
         feedback = dublicate_feed(substrings[0], substrings[1]);
 
 
-	if (feedback == 0){
-		// Format input as JSON string
-		sprintf(json, "{ \"serial Number \": \"%s\", \"Reg No \": \"%s\", \"Name \": \"%s\"}", substrings[0], substrings[1], substrings[2]);
-		write_to_file(json);
-		printf("\nSTATUS: Client Data added it FILE SYSYTEM\n");
-		// Write response to client
-		const char *response = "Data Uploded Successfuly to the file";
-		write(new_sockfd, response, strlen(response));
-		printf("\n\n-------------- --------------------------------------------\n");
-		close(new_sockfd); // Close the new socket
+      	if (feedback == 0){
+      		// Format input as JSON string
+      		sprintf(json, "{ \"serial Number \": \"%s\", \"Reg No \": \"%s\", \"Name \": \"%s\"}", substrings[0], substrings[1], substrings[2]);
+      		write_to_file(json);
+      		printf("\nSTATUS: Client Data added it FILE SYSYTEM\n");
+      		// Write response to client
+      		const char *response = "Data Uploded Successfuly to the file";
+      		write(new_sockfd, response, strlen(response));
+          printf("\n --------------------------------------------------------------------------------------------------------\n");
+      		close(new_sockfd); // Close connection and return to accept()
 
-	}else if (feedback == 1){
-		printf("\nERROR: Duplicated seial number Error \n");
-		const char *response = " Duplicated seial-number error: Serial Number you provided exists in the file system";
-		write(new_sockfd, response, strlen(response));
-		printf("\n\n-------------- --------------------------------------------\n");
-		close(new_sockfd); // Close the new socket
+      	}else if (feedback == 1){
+      		printf("\nERROR: Duplicated seial number Error \n");
+      		const char *response = " Duplicated seial-number error: Serial Number you provided exists in the file system";
+      		write(new_sockfd, response, strlen(response));
+          printf("\n --------------------------------------------------------------------------------------------------------\n");
+      		close(new_sockfd); // Close connection and return to accept()
 
-	}else if (feedback == 2){
-		printf("\nERROR: Duplicate Registration number \n");
-		const char *response = "Duplicated Reg-number error: Registration Number you provided exist in the file";
-		write(new_sockfd, response, strlen(response));
-		printf("\n\n-------------- --------------------------------------------\n");
-		close(new_sockfd); // Close the new socket
+      	}else if (feedback == 2){
+      		printf("\nERROR: Duplicate Registration number \n");
+      		const char *response = "Duplicated Reg-number error: Registration Number you provided exist in the file";
+      		write(new_sockfd, response, strlen(response));
+          printf("\n --------------------------------------------------------------------------------------------------------\n");
+      		close(new_sockfd); // Close connection and return to accept()
 
-	}else if (feedback == 3){
-		printf("\nERROR: The serial Number and Registration Number provided by client are already in the system FILE (Dublication Error)\n");
-		const char *response = "\nERROR: The serial-Number and Reg-Number you provide are already in the File system in the server)\n";
-		write(new_sockfd, response, strlen(response));
-		printf("\n\n-------------- --------------------------------------------\n");
-		close(new_sockfd); // Close the new socket
+      	}else if (feedback == 3){
+      		printf("\nERROR: The serial Number and Registration Number provided by client are already in the system FILE (Dublication Error)\n");
+      		const char *response = "\nERROR: The serial-Number and Reg-Number you provide are already in the File system in the server)\n";
+      		write(new_sockfd, response, strlen(response));
+          printf("\n --------------------------------------------------------------------------------------------------------\n");
+      		close(new_sockfd); // Close connection and return to accept()
 
-	} else {
-	    printf("\nERROR: Unknown Error status from client infomation!\n");
-		const char *response = "ERROR: Unknown Error status : Try Again\n";
-		printf("\n\n-------------- --------------------------------------------\n");
-		write(new_sockfd, response, strlen(response));
-		close(new_sockfd); // Close the new socket
-	}
+      	} else {
+      	    printf("\nERROR: Unknown Error status from client infomation!\n");
+      		const char *response = "ERROR: Unknown Error status : Try Again\n";
+          printf("\n --------------------------------------------------------------------------------------------------------\n");
+      		write(new_sockfd, response, strlen(response));
+      		close(new_sockfd); // Close connection and return to accept()
+      	}
     }
-
+    printf("\n ============================================================================================================");
     close(sockfd); // Close the server socket
     return 0;
 }
