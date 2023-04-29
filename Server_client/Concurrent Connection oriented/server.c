@@ -119,7 +119,7 @@ void *client_handler(void *arg) {
 
         char* substrings[3];
         splitStringByComma(buffer, substrings, 3);
-        printf("\n   client data Received  ")
+        printf("\n   client data Received  ");
         printf("\n\t1. Serial Number        : %s",substrings[0]);
         printf("\n\t2. Registration Number  : %s",substrings[1]);
         printf("\n\t3. Client Name          : %s",substrings[2]);
@@ -199,6 +199,8 @@ int main(int argc, char **argv) {
         perror("Error listening for connections");
         exit(EXIT_FAILURE);
     }
+    printf("\n ================================= Iterative, Connectionless Server ==================================== \n");
+
 
     // Accept incoming client connections and create threads to handle them
     while ((client_socket = accept(server_socket, (struct sockaddr *)&client_address, (socklen_t *)&client_address_length))) {
@@ -207,7 +209,6 @@ int main(int argc, char **argv) {
         pthread_create(&threads[thread_index], NULL, client_handler, (void *)&client_socket); // Create thread
         thread_index++; // used to keep track of the number of threads created. incremented each time a new thread is created
     }
-
 
     close(server_socket); // Close server socket
 

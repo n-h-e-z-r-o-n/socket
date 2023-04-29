@@ -1,12 +1,14 @@
-// Iterative - Connectionless Server
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <pthread.h>
 #include <stdbool.h>
 
+#define PORT 8080
+char buffer[1024];
 int splitStringByComma(char* str, char** substrings, int maxSubstrings) {
     int numSubstrings = 0;
     char* token;
@@ -146,15 +148,34 @@ char  *handle_cleint_data(char client_data[]){
   }
 }
 
-#define PORT 8080
+void *handle_client(void *arg) {
+    struct sockaddr_in address = *(struct sockaddr_in*)arg;
+    int addrlen = sizeof(address);
+    char *server_massege;
+
+    // Create a new socket file descriptor for this thread
+    int new_socket;
+    if ((new_socket = socket(AF_INET, SOCK_DGRAM, 0)) == 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
+
+    server_massege = handle_cleint_data(buffer);
+
+    // Send data to client
+    sendto(new_socket, server_massege, strlen(server_massege), MSG_CONFIRM, (const struct sockaddr *) &address, addrlen);
+    printf("\n --------------------------------------------------------------------------------------------------------\n");
+    // Close socket
+    close(new_socket);
+    return NULL;
+}
 
 int main() {
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[1024] = {0};
-    char *server_massege;
+    char *hello = "Hello from server";
 
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_DGRAM, 0)) == 0) {
@@ -168,31 +189,37 @@ int main() {
         perror("setsockopt");
         exit(EXIT_FAILURE);
     }
-    address.sin_family = AF_INET; // Sets the address family to AF_INET, which indicates that this socket will use IPv4 addresses.
-    address.sin_addr.s_addr = INADDR_ANY; // Sets the IP address of the socket to INADDR_ANY, which means that the socket can receive packets sent to any IP address that the host machine is bound to
-    address.sin_port = htons( PORT ); // Sets the port number of the socke
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons( PORT );
 
     // Bind the socket with the server address
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
+    if (bind(server_fd, (struct sockaddr *)&address,
+                                 sizeof(address))<0) {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
-    printf("\n ================================= Iterative, Connectionless Server ==================================== \n");
-    printf("\n --------------------------------------------------------------------------------------------------------\n");
+
+    printf("\n ==================================== Concurrent-Connectionless Server ==================================\n");
+
+
+    printf("Server listening on port %d...\n", PORT);
+
+    pthread_t thread_id;
 
     while(1) {
-        // Receive data from client
+        // Accept client connection
         int len = recvfrom(server_fd, buffer, 1024,  MSG_WAITALL, ( struct sockaddr *) &address,  &addrlen);
-        buffer[len] = '\0'; // add a null terminator  at the end of a character array
+        buffer[len] = '\0';
         printf("\n --------------------------------------------------------------------------------------------------------\n");
-        printf("Received data from client\n");
+        printf("Received message from client 1: %s\n", buffer);
 
-        server_massege = handle_cleint_data(buffer);
-
-        // Send data to client
-        sendto(server_fd, server_massege, strlen(server_massege), MSG_CONFIRM, (const struct sockaddr *) &address, addrlen);
-        printf("\n --------------------------------------------------------------------------------------------------------\n");
-
+        // Create a new thread to handle the client request
+        if(pthread_create(&thread_id, NULL, handle_client, (void*)&address) < 0) {
+            perror("could not create thread");
+            exit(EXIT_FAILURE);
+        }
+        pthread_detach(thread_id);
     }
     return 0;
 }
