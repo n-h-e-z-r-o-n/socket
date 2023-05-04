@@ -69,28 +69,28 @@ include CMakeFiles/met.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/met.dir/flags.make
 
-CMakeFiles/met.dir/Diffrent_Machine/server.c.o: CMakeFiles/met.dir/flags.make
-CMakeFiles/met.dir/Diffrent_Machine/server.c.o: /home/hezron/met/Diffrent_Machine/server.c
-CMakeFiles/met.dir/Diffrent_Machine/server.c.o: CMakeFiles/met.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hezron/met/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/met.dir/Diffrent_Machine/server.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/met.dir/Diffrent_Machine/server.c.o -MF CMakeFiles/met.dir/Diffrent_Machine/server.c.o.d -o CMakeFiles/met.dir/Diffrent_Machine/server.c.o -c /home/hezron/met/Diffrent_Machine/server.c
+CMakeFiles/met.dir/main.c.o: CMakeFiles/met.dir/flags.make
+CMakeFiles/met.dir/main.c.o: /home/hezron/met/main.c
+CMakeFiles/met.dir/main.c.o: CMakeFiles/met.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hezron/met/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/met.dir/main.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/met.dir/main.c.o -MF CMakeFiles/met.dir/main.c.o.d -o CMakeFiles/met.dir/main.c.o -c /home/hezron/met/main.c
 
-CMakeFiles/met.dir/Diffrent_Machine/server.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/met.dir/Diffrent_Machine/server.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/hezron/met/Diffrent_Machine/server.c > CMakeFiles/met.dir/Diffrent_Machine/server.c.i
+CMakeFiles/met.dir/main.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/met.dir/main.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/hezron/met/main.c > CMakeFiles/met.dir/main.c.i
 
-CMakeFiles/met.dir/Diffrent_Machine/server.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/met.dir/Diffrent_Machine/server.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/hezron/met/Diffrent_Machine/server.c -o CMakeFiles/met.dir/Diffrent_Machine/server.c.s
+CMakeFiles/met.dir/main.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/met.dir/main.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/hezron/met/main.c -o CMakeFiles/met.dir/main.c.s
 
 # Object files for target met
 met_OBJECTS = \
-"CMakeFiles/met.dir/Diffrent_Machine/server.c.o"
+"CMakeFiles/met.dir/main.c.o"
 
 # External object files for target met
 met_EXTERNAL_OBJECTS =
 
-met: CMakeFiles/met.dir/Diffrent_Machine/server.c.o
+met: CMakeFiles/met.dir/main.c.o
 met: CMakeFiles/met.dir/build.make
 met: CMakeFiles/met.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/hezron/met/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable met"

@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/hezron/met/Diffrent_Machine/server.c" "CMakeFiles/met.dir/Diffrent_Machine/server.c.o" "gcc" "CMakeFiles/met.dir/Diffrent_Machine/server.c.o.d"
+  "/home/hezron/met/main.c" "CMakeFiles/met.dir/main.c.o" "gcc" "CMakeFiles/met.dir/main.c.o.d"
   )
 
 # Targets to which this target links.

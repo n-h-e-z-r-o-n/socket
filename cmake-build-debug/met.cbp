@@ -76,7 +76,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/hezron/met/Diffrent_Machine/server.c">
+		<Unit filename="/home/hezron/met/main.c">
 			<Option target="met"/>
 		</Unit>
 		<Unit filename="/home/hezron/met/CMakeLists.txt">

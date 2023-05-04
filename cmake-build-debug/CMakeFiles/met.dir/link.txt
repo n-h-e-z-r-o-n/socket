@@ -1,1 +1,1 @@
-/usr/bin/cc -g CMakeFiles/met.dir/Diffrent_Machine/server.c.o -o met 
+/usr/bin/cc -g CMakeFiles/met.dir/main.c.o -o met 
