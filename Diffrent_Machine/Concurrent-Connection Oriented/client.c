@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
     // Configure server address
     server_address.sin_family = AF_INET;
-    server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_address.sin_addr.s_addr = inet_addr("127.0.0.1"); // specify the ip address of the server
     server_address.sin_port = htons(SERVER_PORT);
 
     // Connect to server
