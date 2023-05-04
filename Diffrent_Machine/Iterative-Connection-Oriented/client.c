@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <arpa/inet.h>
 
-#define PORT 12345
+#define PORT 8080
 
 
 void client_conneection(char str[]) {

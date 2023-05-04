@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/met.dir/Diffrent_Machine/server.c.o"
-  "CMakeFiles/met.dir/Diffrent_Machine/server.c.o.d"
+  "CMakeFiles/met.dir/main.c.o"
+  "CMakeFiles/met.dir/main.c.o.d"
   "met"
   "met.pdb"
 )

@@ -129,29 +129,29 @@ met/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/met.dir/build.make CMakeFiles/met.dir/build
 .PHONY : met/fast
 
-Diffrent_Machine/server.o: Diffrent_Machine/server.c.o
-.PHONY : Diffrent_Machine/server.o
+main.o: main.c.o
+.PHONY : main.o
 
 # target to build an object file
-Diffrent_Machine/server.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/met.dir/build.make CMakeFiles/met.dir/Diffrent_Machine/server.c.o
-.PHONY : Diffrent_Machine/server.c.o
+main.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/met.dir/build.make CMakeFiles/met.dir/main.c.o
+.PHONY : main.c.o
 
-Diffrent_Machine/server.i: Diffrent_Machine/server.c.i
-.PHONY : Diffrent_Machine/server.i
+main.i: main.c.i
+.PHONY : main.i
 
 # target to preprocess a source file
-Diffrent_Machine/server.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/met.dir/build.make CMakeFiles/met.dir/Diffrent_Machine/server.c.i
-.PHONY : Diffrent_Machine/server.c.i
+main.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/met.dir/build.make CMakeFiles/met.dir/main.c.i
+.PHONY : main.c.i
 
-Diffrent_Machine/server.s: Diffrent_Machine/server.c.s
-.PHONY : Diffrent_Machine/server.s
+main.s: main.c.s
+.PHONY : main.s
 
 # target to generate assembly for a file
-Diffrent_Machine/server.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/met.dir/build.make CMakeFiles/met.dir/Diffrent_Machine/server.c.s
-.PHONY : Diffrent_Machine/server.c.s
+main.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/met.dir/build.make CMakeFiles/met.dir/main.c.s
+.PHONY : main.c.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... met"
-	@echo "... Diffrent_Machine/server.o"
-	@echo "... Diffrent_Machine/server.i"
-	@echo "... Diffrent_Machine/server.s"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
 .PHONY : help
 
 

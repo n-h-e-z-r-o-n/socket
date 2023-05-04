@@ -9,6 +9,32 @@
 #include <stdbool.h>
 
 char buffer[1024];
+
+void covert_to_text_file() {
+    // Open JSON file for reading
+    FILE *json_file = fopen("user_data.json", "r");
+    if (json_file == NULL) {
+        printf("Error: Could not open JSON file.\n");
+    }
+
+    // Open text file for writing
+    FILE *text_file = fopen("USER_INFO.txt", "w");
+    if (text_file == NULL) {
+        printf("Error: Could not open text file.\n");
+    }
+
+    // Read in JSON file line by line and write to text file
+    char buffer[1024];
+    while (fgets(buffer, 1024, json_file)) {
+        fputs(buffer, text_file);
+    }
+
+    // Close files
+    fclose(json_file);
+    fclose(text_file);
+}
+
+
 int splitStringByComma(char* str, char** substrings, int maxSubstrings) {
     int numSubstrings = 0;
     char* token;
@@ -42,6 +68,7 @@ void write_to_file(char New_json_Data[]){
     // Close the file
     fclose(fptr);
     printf("\n User information stored in JSON file successfully!");
+    covert_to_text_file();
     //printf("\n------------------------------------------------------------\n");
 	}
 }

@@ -21,39 +21,39 @@ bool search_Duplicates(char search[]){
         // Search for the key in the JSON data
         value = strstr(json, search);
         if (value == NULL) {
-               //printf("Not Data found \n");
-             	return false;
+            //printf("Not Data found \n");
+            return false;
         } else {
-	        //printf("Value Found \n");
-                return true;
-              }
+            //printf("Value Found \n");
+            return true;
         }
+    }
 }
 int dublicate_feed(char s[], char r[]){
 
-	bool serial_results;
-	bool reg_no_results;
-	int status = 0;
+    bool serial_results;
+    bool reg_no_results;
+    int status = 0;
 
-	char ser_no[100] = "\"serial Number \": \"";
-	strcat(ser_no, s); // Concatenate
-	serial_results = search_Duplicates(ser_no);
+    char ser_no[100] = "\"serial Number \": \"";
+    strcat(ser_no, s); // Concatenate
+    serial_results = search_Duplicates(ser_no);
 
-	char reg_no[100] = "\"Reg No \": \"";
-	strcat(reg_no, r); // Concatenate
-	reg_no_results = search_Duplicates(reg_no);
+    char reg_no[100] = "\"Reg No \": \"";
+    strcat(reg_no, r); // Concatenate
+    reg_no_results = search_Duplicates(reg_no);
 
-	if (serial_results){ // check for  Duplicated seial number
-	  	 status = 1;
-	   }
-	if (reg_no_results){ // check for Duplicated Registration number
-	  	 if (status == 1){
-		  	 status = 3;
-	  	 } else {  // check for both Duplicated seial-number and Registration-number
-		  	 status = 2;
-	  	 }
-	   }
-	return status;
+    if (serial_results){ // check for  Duplicated seial number
+        status = 1;
+    }
+    if (reg_no_results){ // check for Duplicated Registration number
+        if (status == 1){
+            status = 3;
+        } else {  // check for both Duplicated seial-number and Registration-number
+            status = 2;
+        }
+    }
+    return status;
 }
 
 
@@ -76,19 +76,19 @@ void write_to_file(char New_json_Data[]){
 
     } else{
 
-    // Write JSON string to file
-    if(fileExists) {
-        fprintf(fptr, ",\n%s", New_json_Data);
-    } else {
-        fprintf(fptr, "[\n%s", New_json_Data);
-    }
+        // Write JSON string to file
+        if(fileExists) {
+            fprintf(fptr, ",\n%s", New_json_Data);
+        } else {
+            fprintf(fptr, "[\n%s", New_json_Data);
+        }
 
 
-    fclose(fptr); // Close the file
-    printf("\n User information stored in JSON file successfully!\n");
+        fclose(fptr); // Close the file
+        printf("\n User information stored in JSON file successfully!\n");
 
 
-}}
+    }}
 
 int main() {
     char serai_Entry[50];
@@ -119,27 +119,27 @@ int main() {
     feedback = dublicate_feed(serai_Entry, Reg_No_Entry);
 
     if (feedback == 0){
-	    // Format input as JSON string
-	    sprintf(json, "{ \"serial Number \": \"%s\", \"Reg No \": \"%s\", \"Name \": \"%s\"}", serai_Entry, Reg_No_Entry, Name_Entry);
-	    printf( "\n Data Captured successfully, Your ddetails has been stored in the file system");
-	    write_to_file(json);
-      printf("\n =============================================================================================================== \n");
+        // Format input as JSON string
+        sprintf(json, "{ \"serial Number \": \"%s\", \"Reg No \": \"%s\", \"Name \": \"%s\"}", serai_Entry, Reg_No_Entry, Name_Entry);
+        printf( "\n Data Captured successfully, Your ddetails has been stored in the file system");
+        write_to_file(json);
+        printf("\n =============================================================================================================== \n");
 
     }else if (feedback == 1){
-    		printf("\n ERROR: Duplicated seial number ~ seial nummber you provide is allready in the file system \n");
+        printf("\n ERROR: Duplicated seial number ~ seial nummber you provide is allready in the file system \n");
         printf("\n =============================================================================================================== \n");
 
     }else if (feedback == 2){
- 		printf("\n ERROR: Duplicated Registration number ~ Registration nummber you provide is allready in the file system \n");
-    printf("\n =============================================================================================================== \n");
+        printf("\n ERROR: Duplicated Registration number ~ Registration nummber you provide is allready in the file system \n");
+        printf("\n =============================================================================================================== \n");
 
     }else if (feedback == 3){
- 		printf("\n ERROR: The serial Number and Registration Number you provide are already in the system (Dublicate Error)\n");
-    printf("\n =============================================================================================================== \n");
+        printf("\n ERROR: The serial Number and Registration Number you provide are already in the system (Dublicate Error)\n");
+        printf("\n =============================================================================================================== \n");
 
     } else {
-            printf("\n ERROR: Unknown Error has occured !\n");
-            printf("\n =============================================================================================================== \n");
+        printf("\n ERROR: Unknown Error has occured !\n");
+        printf("\n =============================================================================================================== \n");
 
     }
     return 0;
