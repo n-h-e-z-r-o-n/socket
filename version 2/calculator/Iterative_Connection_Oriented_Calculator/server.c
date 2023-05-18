@@ -1,15 +1,12 @@
-// concurrent - connectionless server calculator using Fork and process
+//  Iterative-Connection-Oriented server
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <sys/wait.h>
 
 #define PORT 8080
-#define MAX_MSG_LEN 1024
-
 
 char* calculator(char *expr) {
     char* result =  malloc(sizeof(char) * 50); // allocate memory for string;
@@ -52,43 +49,43 @@ char* calculator(char *expr) {
 
 
 int main() {
-    int server_fd, len;
-    char buffer[MAX_MSG_LEN];
-    struct sockaddr_in server_addr, client_addr;
+    int server_fd, new_socket, valread;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+    char *hello = "Hello from server";
 
-    server_fd = socket(AF_INET, SOCK_DGRAM, 0);
-    memset(&client_addr, 0, sizeof(client_addr));
+    //	Create a socket for the server and Bind the socket to a specific port.
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    // Listen for incoming connections.
+    listen(server_fd, 3);
 
-    bind(server_fd, (const struct sockaddr *)&server_addr, sizeof(server_addr));
-
-    printf("\t ----- Concurrent Connection less  Server calculator -----\n");
+    printf("Server listening on port %d...\n", PORT);
 
     while (1) {
-        int pid = fork();
+        // Accept a new client connection
+        new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
 
-        if (pid == 0) { // Child process
-            len = sizeof(client_addr);
-            memset(buffer, 0, sizeof(buffer));
+        printf("New client connected...\n");
+        //	Read the calculation query sent by the client
+        read(new_socket, buffer, 1024);
 
-            recvfrom(server_fd, buffer, MAX_MSG_LEN, 0, (struct sockaddr *)&client_addr, &len);
+        printf("\n\tCalculation Query: %s\n", buffer);
 
-            printf("\n\tCalculation Query: %s\n", buffer);
+        //	Perform the calculation using the calculator function
+        char* answer =calculator(buffer);
 
-            char* answer =calculator(buffer);
+        // Send the result back to the client using send
+        send(new_socket, answer, strlen(answer), 0);
 
+        memset(buffer, 0, sizeof(buffer)); //	Clear the buffer used for communication
 
-            sendto(server_fd, answer, strlen(answer), 0, (struct sockaddr *)&client_addr, len);
-
-            close(server_fd);
-            exit(EXIT_SUCCESS);
-        }
-
-        // Parent process
-        wait(NULL);
+        close(new_socket); // close the socket
     }
 
     return 0;

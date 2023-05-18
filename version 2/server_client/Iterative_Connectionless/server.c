@@ -64,20 +64,20 @@ int main() {
     char buffer[1024] = {0};
     char* substrings[3];
 
+    // Create a socket and bind to well known address
     server_fd = socket(AF_INET, SOCK_DGRAM, 0);
-
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
-
     bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
     printf("Server listening on port %d...\n", PORT);
 
+    // repeatedly read the next request from client, formulate a respose and send a reply back to the client
     while (1) {
         memset(buffer, 0, sizeof(buffer));  // sets all the bytes in the buffer variable to zero.
 
-        recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &addrlen);
+        recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &addrlen); //read request from client
 
         splitStringByComma(buffer, substrings, 3);
 
@@ -91,7 +91,7 @@ int main() {
 
         printf("Received message: %s\n", buffer);
 
-        sendto(server_fd, status, strlen(status),  0,  (struct sockaddr *)&client_addr, addrlen);
+        sendto(server_fd, status, strlen(status),  0,  (struct sockaddr *)&client_addr, addrlen); //reply back to the client
 
         printf("Sent message: %s\n", buffer);
     }

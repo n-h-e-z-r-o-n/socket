@@ -1,15 +1,12 @@
-// concurrent - connectionless server calculator using Fork and process
+// iterative Connectionless server calculator
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <sys/wait.h>
 
 #define PORT 8080
-#define MAX_MSG_LEN 1024
-
 
 char* calculator(char *expr) {
     char* result =  malloc(sizeof(char) * 50); // allocate memory for string;
@@ -50,45 +47,33 @@ char* calculator(char *expr) {
     return result;
 }
 
-
 int main() {
-    int server_fd, len;
-    char buffer[MAX_MSG_LEN];
-    struct sockaddr_in server_addr, client_addr;
+    int server_fd, valread;
+    struct sockaddr_in address, client_addr;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
 
+    // Create a socket for the server and Bind the socket to a specific port.
     server_fd = socket(AF_INET, SOCK_DGRAM, 0);
-    memset(&client_addr, 0, sizeof(client_addr));
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
-
-    bind(server_fd, (const struct sockaddr *)&server_addr, sizeof(server_addr));
-
-    printf("\t ----- Concurrent Connection less  Server calculator -----\n");
 
     while (1) {
-        int pid = fork();
+        memset(buffer, 0, sizeof(buffer)); //	Clear the buffer used for communication
 
-        if (pid == 0) { // Child process
-            len = sizeof(client_addr);
-            memset(buffer, 0, sizeof(buffer));
+        //	Receive a mathematical expression query from the client
+        recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &addrlen);
 
-            recvfrom(server_fd, buffer, MAX_MSG_LEN, 0, (struct sockaddr *)&client_addr, &len);
+        printf("\n\tCalculation Query: %s\n", buffer);
 
-            printf("\n\tCalculation Query: %s\n", buffer);
+        // 	Perform the calculation for the received expression
+        char* answer =calculator(buffer);
 
-            char* answer =calculator(buffer);
-
-
-            sendto(server_fd, answer, strlen(answer), 0, (struct sockaddr *)&client_addr, len);
-
-            close(server_fd);
-            exit(EXIT_SUCCESS);
-        }
-
-        // Parent process
-        wait(NULL);
+        //	Send the answer back to the client
+        sendto(server_fd, answer,  strlen(answer), 0, (struct sockaddr *)&client_addr, addrlen);
     }
 
     return 0;

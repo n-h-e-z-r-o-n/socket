@@ -64,25 +64,26 @@ int main() {
     char buffer[1024] = {0};
     char* substrings[3];
 
-
+    // Create a socket for the server and Bind the socket to a specific port.
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
-
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
-
     bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
-    listen(server_fd, 3);
+    listen(server_fd, 3); // Listen for incoming connections.
 
 
     while (1) {
+        // Accept a new connection from a client
         new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
 
         printf("New client connected...\n");
 
+        // Read the request message from the client.
         read(new_socket, buffer, 1024);
 
+        // Split the received message
         splitStringByComma(buffer, substrings, 3);
 
         printf("\n   client data Received  ");
@@ -91,15 +92,17 @@ int main() {
         printf("\n\t3. Client Name          : %s",substrings[2]);
         printf("\n\n     ");
 
+        // Call the write_to_text_file function
         char* status = write_to_text_file(substrings[0], substrings[1], substrings[2] );
 
+        // Send reply  message back to the client
         send(new_socket, status, strlen(status), 0);
 
         printf("Satus:: %s\n", status);
 
-        memset(buffer, 0, sizeof(buffer));  // sets all the bytes in the buffer variable to zero.
+        memset(buffer, 0, sizeof(buffer));  // 	Clear the buffer used for receiving messages.
 
-        close(new_socket);
+        close(new_socket); // Close the client socket.
     }
 
     return 0;

@@ -65,27 +65,23 @@ int main() {
     char* substrings[3];
     char status[1000];
 
+    //create a socket and bind to an address
     server_fd = socket(AF_INET, SOCK_DGRAM, 0);
-
     memset(&server_addr, 0, sizeof(server_addr));
     memset(&client_addr, 0, sizeof(client_addr));
-
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(PORT);
-
     bind(server_fd, (const struct sockaddr *)&server_addr, sizeof(server_addr));
 
     while (1) {
-        int pid = fork();
+        int pid = fork(); // Child process
 
-        if (pid == 0) { // Child process
+        if (pid == 0) {
                     len = sizeof(client_addr);
                     memset(buffer, 0, sizeof(buffer));  // sets all the bytes in the buffer variable to zero.
 
                     recvfrom(server_fd, buffer, MAX_MSG_LEN, 0, (struct sockaddr *)&client_addr, &len);
-
-                    printf("\n\n Received message            ");
 
                     splitStringByComma(buffer, substrings, 3);
 
@@ -97,14 +93,14 @@ int main() {
 
                     char* status = write_to_text_file(substrings[0], substrings[1], substrings[2] );
 
-                    sendto(server_fd, status, strlen(status), 0, (struct sockaddr *)&client_addr, len);
+                    sendto(server_fd, status, strlen(status), 0, (struct sockaddr *)&client_addr, len); // Send message back to the client
 
-                    close(server_fd);
+                    close(server_fd); // Close the socket and exit the child process.
                     exit(EXIT_SUCCESS);
         }
 
-        // Parent process
-        wait(NULL);
+
+        wait(NULL); // 	Wait for the child process to complete.
     }
 
     return 0;

@@ -1,4 +1,4 @@
-// concurrent - connectionless server calculator using Fork and process
+// Concurrent-Connection Oriented server using fork and process
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,8 +8,6 @@
 #include <sys/wait.h>
 
 #define PORT 8080
-#define MAX_MSG_LEN 1024
-
 
 char* calculator(char *expr) {
     char* result =  malloc(sizeof(char) * 50); // allocate memory for string;
@@ -52,42 +50,47 @@ char* calculator(char *expr) {
 
 
 int main() {
-    int server_fd, len;
-    char buffer[MAX_MSG_LEN];
-    struct sockaddr_in server_addr, client_addr;
+    int server_fd, new_socket, valread;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
 
-    server_fd = socket(AF_INET, SOCK_DGRAM, 0);
-    memset(&client_addr, 0, sizeof(client_addr));
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
 
-    bind(server_fd, (const struct sockaddr *)&server_addr, sizeof(server_addr));
+    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
-    printf("\t ----- Concurrent Connection less  Server calculator -----\n");
+    listen(server_fd, 5);
 
     while (1) {
+        new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
         int pid = fork();
 
-        if (pid == 0) { // Child process
-            len = sizeof(client_addr);
-            memset(buffer, 0, sizeof(buffer));
 
-            recvfrom(server_fd, buffer, MAX_MSG_LEN, 0, (struct sockaddr *)&client_addr, &len);
+        if (pid == 0) { // Child process
+            close(server_fd);
+
+            read(new_socket, buffer, 1024);
 
             printf("\n\tCalculation Query: %s\n", buffer);
 
+            //	Perform the calculation using the calculator function
             char* answer =calculator(buffer);
 
+            send(new_socket, answer, strlen(answer), 0);
 
-            sendto(server_fd, answer, strlen(answer), 0, (struct sockaddr *)&client_addr, len);
+            memset(buffer, 0, sizeof(buffer)); //	Clear the buffer used for communication
 
-            close(server_fd);
+            close(new_socket);
+
             exit(EXIT_SUCCESS);
         }
 
         // Parent process
+        close(new_socket);
         wait(NULL);
     }
 
