@@ -55,11 +55,13 @@ int main() {
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
 
+    printf("creating server socket ");
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
-
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
+
+    printf("binding server address to socket");
 
     bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
