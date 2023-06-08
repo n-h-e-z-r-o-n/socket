@@ -62,7 +62,6 @@ int main() {
     address.sin_port = htons(PORT);
 
     printf("binding server address to socket");
-
     bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
     listen(server_fd, 5);
