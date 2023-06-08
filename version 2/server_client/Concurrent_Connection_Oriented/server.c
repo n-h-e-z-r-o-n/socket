@@ -64,6 +64,7 @@ int main() {
     char buffer[1024] = {0};
     char* substrings[3];
 
+    printf("Creating server socket");
     // Create a socket for the server and Bind the socket to a specific port.
     server_fd = socket(AF_INET, SOCK_STREAM, 0) ;
     address.sin_family = AF_INET;
@@ -78,7 +79,7 @@ int main() {
     while (1) {
         new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
 
-        int pid = fork(); //	Fork a child process 
+        int pid = fork(); //	Fork a child process
 
         if (pid == 0) { // Child process
             close(server_fd);
