@@ -30,16 +30,18 @@ int checkDuplicate(char serialNumber[], char regNumber[]) {
 
 char* write_to_text_file(char serial_n[], char reg_n[], char name[]){
      char* status = malloc(sizeof(char) * 110);
+     printf("\tChecking for duplicates \n");
      int feed = checkDuplicate(serial_n, reg_n);
      if (feed){
-         printf("\nDuplicate data entered: ");
+         printf("\tDuplicate data entered\n");
          strcpy(status, "Duplicate Error: ither serial number or registration number is a duplicate");
      } else {
+       printf("\tWriting to client data to text file \n");
        FILE *file;
        file = fopen("data.txt", "a"); // open file in append mode
        fprintf(file, "%s %s %s\n", serial_n, reg_n, name); // write details to file
        fclose(file);
-       printf("Details saved to file.\n");
+       printf("\tDetails saved to file.\n");
        strcpy(status, "Details saved to file");
      }
      return status;
@@ -64,36 +66,46 @@ int main() {
     char buffer[1024] = {0};
     char* substrings[3];
 
+    printf("\n\n- Create server socket\n");
+
     // Create a socket and bind to well known address
     server_fd = socket(AF_INET, SOCK_DGRAM, 0);
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
+
+    printf("- Binding server socket to server addresss\n");
     bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
-    printf("Server listening on port %d...\n", PORT);
+    printf("- Entering a continuous loop to handle client requestst\n");
 
     // repeatedly read the next request from client, formulate a respose and send a reply back to the client
     while (1) {
-        memset(buffer, 0, sizeof(buffer));  // sets all the bytes in the buffer variable to zero.
 
         recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &addrlen); //read request from client
+        printf("\n\n\treceiving request from client\n");
+
+        printf("\tSplit the received message into substrings using commas as separator\n");
 
         splitStringByComma(buffer, substrings, 3);
 
-        printf("\n   client data Received  ");
-        printf("\n\t1. Serial Number        : %s",substrings[0]);
-        printf("\n\t2. Registration Number  : %s",substrings[1]);
-        printf("\n\t3. Client Name          : %s",substrings[2]);
+        printf("\n\t   client data Received  ");
+        printf("\n\t\t1. Serial Number        : %s",substrings[0]);
+        printf("\n\t\t2. Registration Number  : %s",substrings[1]);
+        printf("\n\t\t3. Client Name          : %s",substrings[2]);
         printf("\n\n     ");
 
         char* status = write_to_text_file(substrings[0], substrings[1], substrings[2] );
 
-        printf("Received message: %s\n", buffer);
+        printf("\tSending data to client\n");
 
         sendto(server_fd, status, strlen(status),  0,  (struct sockaddr *)&client_addr, addrlen); //reply back to the client
 
-        printf("Sent message: %s\n", buffer);
+        printf("\tClear the buffer \n");
+
+        memset(buffer, 0, sizeof(buffer));  // sets all the bytes in the buffer variable to zero.
+
+
     }
 
     return 0;

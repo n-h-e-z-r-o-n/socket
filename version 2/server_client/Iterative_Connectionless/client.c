@@ -42,6 +42,8 @@ int main() {
     struct sockaddr_in server_addr;
     char buffer[1024] = {0};
 
+    printf("Creating Client socket\n");
+
     client_fd = socket(AF_INET, SOCK_DGRAM, 0);
 
     server_addr.sin_family = AF_INET;
@@ -52,12 +54,16 @@ int main() {
 
         char* your_details = user_detail_prompt();
 
+        printf("Send data to the server \n");
+
         sendto(client_fd, your_details, strlen(your_details), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
         memset(buffer, 0, sizeof(buffer));
 
+        printf("Receive data from the server\n");
+
         recvfrom(client_fd, buffer, sizeof(buffer), 0, NULL, NULL);
-        
+
         printf("Received message: %s\n", buffer);
 
         memset(buffer, 0, sizeof(buffer));
