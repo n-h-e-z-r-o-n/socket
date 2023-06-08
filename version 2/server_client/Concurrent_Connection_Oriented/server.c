@@ -70,15 +70,20 @@ int main() {
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
+
+    printf("Binding server address to server socket");
     bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
+    printf("Listen for incoming connections");
     // Listen for incoming connections.
     listen(server_fd, 5);
 
-
+    printf("Listen for incoming connections");
     while (1) {
+        printf("Accept a new connection from a client.");
         new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
 
+        printf("Fork a child process for each client");
         int pid = fork(); //	Fork a child process
 
         if (pid == 0) { // Child process
