@@ -31,16 +31,19 @@ int checkDuplicate(char serialNumber[], char regNumber[]) {
 
 char* write_to_text_file(char serial_n[], char reg_n[], char name[]){
      char* status = malloc(sizeof(char) * 110);
-     int feed = checkDuplicate(serial_n, reg_n);
+
+     printf("\tchecking for duplicate data.\n");
+          int feed = checkDuplicate(serial_n, reg_n);
      if (feed){
-         printf("\nDuplicate data entered: ");
+         printf("\tDuplicate data entered: \n");
          strcpy(status, "Duplicate Error: either serial number or registration number is a duplicate");
      } else {
+       printf("\tWriting client's data to text file\n");
        FILE *file;
        file = fopen("data.txt", "a"); // open file in append mode
        fprintf(file, "%s %s %s\n", serial_n, reg_n, name); // write details to file
        fclose(file);
-       printf("Details saved to file.\n");
+       printf("\tDetails saved to file.\n");
        strcpy(status, "Details saved to file");
      }
      return status;
@@ -64,54 +67,61 @@ int main() {
     char buffer[1024] = {0};
     char* substrings[3];
 
-    printf("Creating server socket");
+    printf("\n\n\nCreating server socket\n");
     // Create a socket for the server and Bind the socket to a specific port.
     server_fd = socket(AF_INET, SOCK_STREAM, 0) ;
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
 
-    printf("Binding server address to server socket");
+    printf("Binding server address to server socket\n");
     bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
-    printf("Listen for incoming connections");
+    printf("Listen for incoming connections\n\n");
     // Listen for incoming connections.
     listen(server_fd, 5);
 
-    printf("Listen for incoming connections");
     while (1) {
-        printf("Accept a new connection from a client.");
+        printf("\n\n\n\tAccept a new connection from a client.\n");
         new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
 
-        printf("Fork a child process for each client");
+        printf("\tFork a child process for each client\n");
         int pid = fork(); //	Fork a child process
 
         if (pid == 0) { // Child process
             close(server_fd);
 
+            printf("\tRead the request message from the client\n");
             read(new_socket, buffer, 1024);
-            printf("Received message: %s\n", buffer);
+
+            printf("\tReceived message:  %s\n", buffer);
+
+            printf("\tAnalyzing client's massage\n");
 
             splitStringByComma(buffer, substrings, 3);
 
-            printf("\n   client data Received  ");
-            printf("\n\t1. Serial Number        : %s",substrings[0]);
-            printf("\n\t2. Registration Number  : %s",substrings[1]);
-            printf("\n\t3. Client Name          : %s",substrings[2]);
+            printf("\n\t   client data Received  ");
+            printf("\n\t\t1. Serial Number        : %s",substrings[0]);
+            printf("\n\t\t2. Registration Number  : %s",substrings[1]);
+            printf("\n\t\t3. Client Name          : %s",substrings[2]);
             printf("\n\n     ");
 
             char* status = write_to_text_file(substrings[0], substrings[1], substrings[2] );
 
+            printf("\tSend the status message back to the clien\n");
             send(new_socket, status, strlen(status), 0);
 
             memset(buffer, 0, sizeof(buffer));
 
+            printf("\tClose the client socket and exit the child process.\n");
             close(new_socket);
             exit(EXIT_SUCCESS);
         }
 
         // Parent process
         close(new_socket);
+
+        printf("\tWait for the child process to complete.");
         wait(NULL);
     }
 

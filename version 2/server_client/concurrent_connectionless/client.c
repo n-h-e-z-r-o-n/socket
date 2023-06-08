@@ -36,7 +36,6 @@ char* user_detail_prompt() {  // Prompt user for their information -------------
       Name_Entry[strcspn(Name_Entry, "\n")] = 0;
 
       sprintf(user_detail, "%s,%s,%s", serai_Entry, Reg_No_Entry, Name_Entry); // Format input in to single string
-
       return user_detail;
 }
 
@@ -44,23 +43,31 @@ int main() {
     int client_socket;
     struct sockaddr_in server_address;
 
+    printf("\n- Create a socket \n");
     client_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
+    printf("\n- Connecting client to server address \n");
     server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = inet_addr(SERVER_IP);
     server_address.sin_port = htons(PORT);
 
     char* your_details = user_detail_prompt();
 
+    printf("\n- Sending client data to Server.\n");
+
+
     sendto(client_socket, your_details, strlen(your_details), 0, (struct sockaddr *)&server_address, sizeof(server_address));
 
 
-    printf("Message sent to server.\n");
+    printf("\n- Message sent to server.\n");
 
     char buffer[MAX_SIZE] = {0};
+
+    printf("\n- Recieving response for the server\n");
+
     recvfrom(client_socket, buffer, MAX_SIZE, 0, NULL, NULL);
 
-    printf("Server response: %s\n", buffer);
+    printf("\n- Server response: %s\n", buffer);
 
     close(client_socket);
 

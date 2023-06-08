@@ -43,23 +43,26 @@ int main() {
     struct sockaddr_in server_addr;
     char buffer[1024] = {0};
 
+    printf("\n\n\ncreating a client socket\n");
     client_fd = socket(AF_INET, SOCK_STREAM, 0);
-
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
-
     inet_pton(AF_INET, SERVER_IP, &server_addr.sin_addr);
 
+    printf("Connecting client socket to the server address\n");
     connect(client_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
 
 
     char* your_details = user_detail_prompt();
 
+    printf("Sending user_details to ther server\n");
     send(client_fd, your_details, strlen(your_details), 0);
+
 
     memset(buffer, 0, sizeof(buffer));
 
+    printf("Recieving data from the  server \n");
     read(client_fd, buffer, 1024);
 
     printf("Received:  %s\n", buffer);

@@ -29,16 +29,18 @@ int checkDuplicate(char serialNumber[], char regNumber[]) {
 
 char* write_to_text_file(char serial_n[], char reg_n[], char name[]){
      char* status = malloc(sizeof(char) * 110);
+     printf("\tChecking for Duplicate data\n");
      int feed = checkDuplicate(serial_n, reg_n);
      if (feed){
-         printf("\nDuplicate data entered: ");
+         printf("\tDuplicate data entered: \n");
          strcpy(status, "Duplicate Error: ither serial number or registration number is a duplicate");
      } else {
+       printf("\tWriting client data to text file\n");
        FILE *file;
        file = fopen("data.txt", "a"); // open file in append mode
        fprintf(file, "%s %s %s\n", serial_n, reg_n, name); // write details to file
        fclose(file);
-       printf("Details saved to file.\n");
+       printf("\tDetails saved to file.\n");
        strcpy(status, "Details saved to file");
      }
      return status;
@@ -64,7 +66,7 @@ int main() {
     struct sockaddr_in server_addr, client_addr;
     char* substrings[3];
     char status[1000];
-
+    printf("\n- Creating server socket\n");
     //create a socket and bind to an address
     server_fd = socket(AF_INET, SOCK_DGRAM, 0);
     memset(&server_addr, 0, sizeof(server_addr));
@@ -72,34 +74,42 @@ int main() {
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(PORT);
-    bind(server_fd, (const struct sockaddr *)&server_addr, sizeof(server_addr));
 
+    printf("- Binding server socket to server-address\n");
+    bind(server_fd, (const struct sockaddr *)&server_addr, sizeof(server_addr));
+    printf("- Enter a continuous loop to handle client requests\n");
     while (1) {
+        printf("\n\n\tFork a child process for client \n");
         int pid = fork(); // Child process
 
         if (pid == 0) {
                     len = sizeof(client_addr);
                     memset(buffer, 0, sizeof(buffer));  // sets all the bytes in the buffer variable to zero.
 
-                    recvfrom(server_fd, buffer, MAX_MSG_LEN, 0, (struct sockaddr *)&client_addr, &len);
 
+                    recvfrom(server_fd, buffer, MAX_MSG_LEN, 0, (struct sockaddr *)&client_addr, &len);
+                    printf("\tReceive the data from the client\n");
+
+                    printf("\tAnalyzing clients Data\n");
                     splitStringByComma(buffer, substrings, 3);
 
-                    printf("\n   client data Received  ");
-                    printf("\n\t1. Serial Number        : %s",substrings[0]);
-                    printf("\n\t2. Registration Number  : %s",substrings[1]);
-                    printf("\n\t3. Client Name          : %s",substrings[2]);
+                    printf("\n\t   client data Received  ");
+                    printf("\n\t\t1. Serial Number        : %s",substrings[0]);
+                    printf("\n\t\t2. Registration Number  : %s",substrings[1]);
+                    printf("\n\t\t3. Client Name          : %s",substrings[2]);
                     printf("\n\n     ");
 
                     char* status = write_to_text_file(substrings[0], substrings[1], substrings[2] );
 
+                    printf("\tSending  data to the client\n");
                     sendto(server_fd, status, strlen(status), 0, (struct sockaddr *)&client_addr, len); // Send message back to the client
 
+                    printf("\tClose the socket and exit the child process.\n");
                     close(server_fd); // Close the socket and exit the child process.
                     exit(EXIT_SUCCESS);
         }
 
-
+      
         wait(NULL); // 	Wait for the child process to complete.
     }
 
