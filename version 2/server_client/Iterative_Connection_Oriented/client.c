@@ -13,7 +13,6 @@ char* user_detail_prompt() {  // Prompt user for their information -------------
       char serai_Entry[50];
       char Reg_No_Entry[50];
       char Name_Entry[50];
-      printf("\n --------------------------------------------------------\n");
       printf("\n");
       printf("         Fill In Your Details\n");
       printf("\n\t 1. Enter Serail Number  :  ");
@@ -42,27 +41,29 @@ int main() {
     char buffer[1024] = {0};
     char *hello = "Hello from client";
 
+    printf("\n- Creating client socket \n");
     client_fd = socket(AF_INET, SOCK_STREAM, 0);
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
     server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
+    printf("- connecting client socket to server ip address\n");
     connect(client_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
-    printf("Connected to server...\n");
+    printf("- Connected to server...\n");
 
     char* your_details = user_detail_prompt();
-
+    printf("- Sending Client data to the server\n");
     send(client_fd, your_details, strlen(your_details), 0);
-    
-    printf("Sent message: %s\n", hello);
+
+    printf("- Sent message: %s\n", hello);
 
     memset(buffer, 0, sizeof(buffer));
-
+    printf("- Recieving data from the server\n ");
     read(client_fd, buffer, 1024);
 
-    printf("Received message: %s\n", buffer);
+    printf("- Received message: %s\n", buffer);
 
+    printf("- Clossing client socket\n ");
     close(client_fd);
 
     return 0;
