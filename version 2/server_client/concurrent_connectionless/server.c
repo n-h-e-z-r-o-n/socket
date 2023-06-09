@@ -78,40 +78,45 @@ int main() {
     printf("- Binding server socket to server-address\n");
     bind(server_fd, (const struct sockaddr *)&server_addr, sizeof(server_addr));
     printf("- Enter a continuous loop to handle client requests\n");
-    while (1) {
-        printf("\n\n\tFork a child process for client \n");
-        int pid = fork(); // Child process
 
-        if (pid == 0) {
-                    len = sizeof(client_addr);
-                    memset(buffer, 0, sizeof(buffer));  // sets all the bytes in the buffer variable to zero.
+    int count = 1;
+        while (1) {
+            printf("\n--------------------------------------------\n");
+            printf("\n\n\tWaiting for client data...\n");
+            len = sizeof(client_addr);
+            memset(buffer, 0, sizeof(buffer));
 
+            recvfrom(server_fd, buffer, MAX_MSG_LEN, 0, (struct sockaddr *)&client_addr, &len);
+            printf("\tReceived data from the client\n");
 
-                    recvfrom(server_fd, buffer, MAX_MSG_LEN, 0, (struct sockaddr *)&client_addr, &len);
-                    printf("\tReceive the data from the client\n");
+            printf("\tProcess %d is sleeping\n", count );
+            sleep(10);
+            int pid = fork(); // Fork a child process for each client
+            if (pid == 0) {
+                printf("\tChild process created\n");
+                printf("\tAnalyzing client's data\n");
 
-                    printf("\tAnalyzing clients Data\n");
-                    splitStringByComma(buffer, substrings, 3);
+                char* substrings[3];
+                splitStringByComma(buffer, substrings, 3);
 
-                    printf("\n\t   client data Received  ");
-                    printf("\n\t\t1. Serial Number        : %s",substrings[0]);
-                    printf("\n\t\t2. Registration Number  : %s",substrings[1]);
-                    printf("\n\t\t3. Client Name          : %s",substrings[2]);
-                    printf("\n\n     ");
+                printf("\n\t   Client data received:");
+                printf("\n\t\t1. Serial Number        : %s", substrings[0]);
+                printf("\n\t\t2. Registration Number  : %s", substrings[1]);
+                printf("\n\t\t3. Client Name          : %s", substrings[2]);
+                printf("\n\n");
 
-                    char* status = write_to_text_file(substrings[0], substrings[1], substrings[2] );
+                char* status = write_to_text_file(substrings[0], substrings[1], substrings[2]);
 
-                    printf("\tSending  data to the client\n");
-                    sendto(server_fd, status, strlen(status), 0, (struct sockaddr *)&client_addr, len); // Send message back to the client
+                printf("\tSending data to the client\n");
+                sendto(server_fd, status, strlen(status), 0, (struct sockaddr *)&client_addr, len); // Send message back to the client
 
-                    printf("\tClose the socket and exit the child process.\n");
-                    close(server_fd); // Close the socket and exit the child process.
-                    exit(EXIT_SUCCESS);
+                printf("\tChild process completed. Exiting.\n");
+                exit(EXIT_SUCCESS);
+
+            }
+            count = count + 1;
         }
 
-      
-        wait(NULL); // 	Wait for the child process to complete.
-    }
 
     return 0;
 }
