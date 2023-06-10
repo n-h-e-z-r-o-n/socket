@@ -1,11 +1,10 @@
-// Concurrent-Connection Oriented server using fork and process
+//  Iterative-Connection-Oriented server
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <sys/wait.h>
 
 #define PORT 8080
 
@@ -31,14 +30,13 @@ int checkDuplicate(char serialNumber[], char regNumber[]) {
 
 char* write_to_text_file(char serial_n[], char reg_n[], char name[]){
      char* status = malloc(sizeof(char) * 110);
-
-     printf("\tchecking for duplicate data.\n");
-          int feed = checkDuplicate(serial_n, reg_n);
+     printf("\tChecking for dupilcate\n");
+     int feed = checkDuplicate(serial_n, reg_n);
      if (feed){
-         printf("\tDuplicate data entered: \n");
+         printf("\tDuplicate data entered\n");
          strcpy(status, "Duplicate Error: either serial number or registration number is a duplicate");
      } else {
-       printf("\tWriting client's data to text file\n");
+       printf("\tWriting client data to text file\n");
        FILE *file;
        file = fopen("data.txt", "a"); // open file in append mode
        fprintf(file, "%s %s %s\n", serial_n, reg_n, name); // write details to file
@@ -60,6 +58,7 @@ int splitStringByComma(char* str, char** substrings, int maxSubstrings) {
     return numSubstrings;
 }
 
+
 int main() {
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
@@ -67,60 +66,49 @@ int main() {
     char buffer[1024] = {0};
     char* substrings[3];
 
-    printf("\n\n\nCreating server socket\n");
+    printf("Creating Server socket\n");
     // Create a socket for the server and Bind the socket to a specific port.
-    server_fd = socket(AF_INET, SOCK_STREAM, 0) ;
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
 
-    printf("Binding server address to server socket\n");
+    printf("Binding server socket to server ip address\n");
     bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 
-    printf("Listen for incoming connections\n\n");
-    // Listen for incoming connections.
-    listen(server_fd, 5);
-    int count = 1;
+    printf("Listen for incoming connections.\n");
+    listen(server_fd, 3); // Listen for incoming connections.
+
+
     while (1) {
-        printf("\n\n\n\tAccept a new connection from a client.\n");
-        new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
+        // Accept a new connection from a client
+        printf("\n\n\tAccept connection from a client\n");
+        new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
 
-        printf("\tFork a child process for each client\n");
-        int pid = fork(); //	Fork a child process
+        // Read the request message from the client.
+        read(new_socket, buffer, 1024);
+        printf("\tReceiving the request message from the client\n");
 
-        if (pid == 0) { // Child process
-            printf("\tProcess %d is sleeping\n\n\n", count );
-            sleep(10);
-            printf("\tProcess %d is runnig\n\n", count );
-            close(server_fd);
+        printf("\tAnalyzing client data\n");
+        // Split the received message
+        splitStringByComma(buffer, substrings, 3);
 
-            printf("\tRead the request message from the client\n");
-            read(new_socket, buffer, 1024);
+        printf("\n\t   client data Received  ");
+        printf("\n\t\t1. Serial Number        : %s",substrings[0]);
+        printf("\n\t\t2. Registration Number  : %s",substrings[1]);
+        printf("\n\t\t3. Client Name          : %s",substrings[2]);
+        printf("\n\n     ");
 
-            printf("\tAnalyzing client's massage\n");
+        // Call the write_to_text_file function
+        char* status = write_to_text_file(substrings[0], substrings[1], substrings[2] );
 
-            splitStringByComma(buffer, substrings, 3);
+        // Send reply  message back to the client
+        send(new_socket, status, strlen(status), 0);
+        printf("\tSending data to client\n");
 
-            printf("\n\t   client data Received  ");
-            printf("\n\t\t1. Serial Number        : %s",substrings[0]);
-            printf("\n\t\t2. Registration Number  : %s",substrings[1]);
-            printf("\n\t\t3. Client Name          : %s",substrings[2]);
-            printf("\n\n     ");
+        memset(buffer, 0, sizeof(buffer));  // 	Clear the buffer used for receiving messages.
 
-            char* status = write_to_text_file(substrings[0], substrings[1], substrings[2] );
-
-            printf("\tSend the status message back to the clien\n");
-            send(new_socket, status, strlen(status), 0);
-
-            memset(buffer, 0, sizeof(buffer));
-
-            printf("\tClose the client socket and exit the child process.\n");
-            close(new_socket);
-
-            printf("\tProcess %d Finished\n\n", count);
-            exit(EXIT_SUCCESS);
-        }
-    count = count + 1;
+        close(new_socket); // Close the client socket.
     }
 
     return 0;

@@ -80,7 +80,7 @@ int main() {
     printf("Listen for incoming connections\n\n");
     // Listen for incoming connections.
     listen(server_fd, 5);
-    int count = 1;
+
     while (1) {
         printf("\n\n\n\tAccept a new connection from a client.\n");
         new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
@@ -89,13 +89,12 @@ int main() {
         int pid = fork(); //	Fork a child process
 
         if (pid == 0) { // Child process
-            printf("\tProcess %d is sleeping\n\n\n", count );
-            sleep(10);
-            printf("\tProcess %d is runnig\n\n", count );
             close(server_fd);
 
             printf("\tRead the request message from the client\n");
             read(new_socket, buffer, 1024);
+
+            printf("\tReceived message:  %s\n", buffer);
 
             printf("\tAnalyzing client's massage\n");
 
@@ -116,11 +115,14 @@ int main() {
 
             printf("\tClose the client socket and exit the child process.\n");
             close(new_socket);
-
-            printf("\tProcess %d Finished\n\n", count);
             exit(EXIT_SUCCESS);
         }
-    count = count + 1;
+
+        // Parent process
+        close(new_socket);
+
+        printf("\tWait for the child process to complete.");
+        wait(NULL);
     }
 
     return 0;

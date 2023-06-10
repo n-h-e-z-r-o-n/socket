@@ -43,8 +43,6 @@ int main() {
     struct sockaddr_in server_addr;
     char buffer[1024] = {0};
 
-    char* your_details = user_detail_prompt();
-
     printf("\n\n\ncreating a client socket\n");
     client_fd = socket(AF_INET, SOCK_STREAM, 0);
     server_addr.sin_family = AF_INET;
@@ -56,7 +54,7 @@ int main() {
 
 
 
-
+    char* your_details = user_detail_prompt();
 
     printf("Sending user_details to ther server\n");
     send(client_fd, your_details, strlen(your_details), 0);

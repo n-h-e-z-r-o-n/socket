@@ -1,4 +1,4 @@
-// Concurrent-Connection Oriented client using fork and process
+//  Iterative, Connectionless client
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,14 +6,13 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define SERVER_IP "127.0.0.1"
 #define PORT 8080
 
 char* user_detail_prompt() {  // Prompt user for their information --------------
       char* user_detail = malloc(sizeof(char) * 30); // allocate memory for string
-      char serai_Entry[1000];
-      char Reg_No_Entry[1000];
-      char Name_Entry[1000];
+      char serai_Entry[50];
+      char Reg_No_Entry[50];
+      char Name_Entry[50];
       printf("\n --------------------------------------------------------\n");
       printf("\n");
       printf("         Fill In Your Details\n");
@@ -32,44 +31,43 @@ char* user_detail_prompt() {  // Prompt user for their information -------------
       Reg_No_Entry[strcspn(Reg_No_Entry, "\n")] = 0;
       Name_Entry[strcspn(Name_Entry, "\n")] = 0;
 
-      sprintf(user_detail, "%s,%s,%s\n", serai_Entry, Reg_No_Entry, Name_Entry); // Format input in to single string
+      sprintf(user_detail, "%s,%s,%s", serai_Entry, Reg_No_Entry, Name_Entry); // Format input in to single string
 
       return user_detail;
 }
 
 
 int main() {
-    int client_fd, valread;
+    int client_fd;
     struct sockaddr_in server_addr;
     char buffer[1024] = {0};
 
-    char* your_details = user_detail_prompt();
+    printf("Creating Client socket\n");
 
-    printf("\n\n\ncreating a client socket\n");
-    client_fd = socket(AF_INET, SOCK_STREAM, 0);
+    client_fd = socket(AF_INET, SOCK_DGRAM, 0);
+
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
-    inet_pton(AF_INET, SERVER_IP, &server_addr.sin_addr);
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    printf("Connecting client socket to the server address\n");
-    connect(client_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+    while (1) {
 
+        char* your_details = user_detail_prompt();
 
+        printf("Send data to the server \n");
 
+        sendto(client_fd, your_details, strlen(your_details), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
+        memset(buffer, 0, sizeof(buffer));
 
-    printf("Sending user_details to ther server\n");
-    send(client_fd, your_details, strlen(your_details), 0);
+        printf("Receive data from the server\n");
 
+        recvfrom(client_fd, buffer, sizeof(buffer), 0, NULL, NULL);
 
-    memset(buffer, 0, sizeof(buffer));
+        printf("Received message: %s\n", buffer);
 
-    printf("Recieving data from the  server \n");
-    read(client_fd, buffer, 1024);
-
-    printf("Received:  %s\n", buffer);
-    memset(your_details, 0, sizeof(your_details));
-
+        memset(buffer, 0, sizeof(buffer));
+    }
 
     return 0;
 }

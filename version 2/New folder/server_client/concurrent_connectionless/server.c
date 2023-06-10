@@ -81,7 +81,7 @@ int main() {
 
     int count = 1;
         while (1) {
-
+            printf("\n--------------------------------------------\n");
             printf("\n\n\tWaiting for client data...\n");
 
             len = sizeof(client_addr);
@@ -91,13 +91,11 @@ int main() {
             printf("\tProcess %d is runnig\n\n", count );
             printf("\tReceived data from the client\n");
 
-
+            printf("\tProcess %d is sleeping\n\n\n", count );
+            sleep(10);
+            printf("\tProcess %d is runnig\n\n", count );
             int pid = fork(); // Fork a child process for each client
             if (pid == 0) {
-                printf("\tProcess %d is sleeping\n\n\n", count );
-                sleep(10);
-                printf("\tProcess %d is runnig\n\n", count );
-                
                 printf("\tChild process created\n");
                 printf("\tAnalyzing client's data\n");
 
